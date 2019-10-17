@@ -70,6 +70,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def createConections(self):
 
         self.timer.timeout.connect(self.update)
+        self.lineEdit.textChanged.connect(self.requestUpdate)
         self.actionNew.triggered.connect(self.new)
         self.actionOpen.triggered.connect(self.open)
         self.actionSave_As.triggered.connect(self.saveAs)
@@ -81,10 +82,65 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionShow_Top_Spine.triggered.connect(self.requestUpdate)
         self.actionShow_Right_Spine.triggered.connect(self.requestUpdate)
         self.checkBox.stateChanged.connect(self.requestUpdate)
+        self.radioButton.clicked.connect(self.requestUpdate)
+        self.radioButton_2.clicked.connect(self.requestUpdate)
+        self.radioButton_3.clicked.connect(self.requestUpdate)
+        self.horizontalScrollBar.valueChanged.connect(self.requestUpdate)
 
     def requestUpdate(self):
 
         self.updated = True
+
+    def readInput(self):
+
+        input = self.lineEdit.text()
+        print(input)
+
+        if not input:
+            self.canvas.draw()
+            #self.hexLabel.setText('-')
+            #self.binLabel.setText('-')
+            return None
+
+        if self.radioButton_3.isChecked():
+
+            binary = input
+
+            if len(binary) > 2:
+                if binary[0] == '0' and (binary[1] == 'b' or binary[1] == 'B'):
+                    binary = binary[2:]
+
+            hex_ = self._bin_to_hex(binary)
+
+            if hex_ is None:
+                self.canvas.draw()
+                #self.hexLabel.setText('-')
+                #self.binLabel.setText('Binário Invalido')
+                return None
+
+        else:
+
+            if self.radioButton_2.isChecked():
+                hex_ = input
+            else:
+                hex_ = self._word_to_hex(input)
+
+            if len(hex_) > 2:
+                if hex_[0] == '0' and (hex_[1] == 'x' or hex_[1] == 'X'):
+                    hex_ = hex_[2:]
+
+            binary = self._hex_to_binary(hex_)
+
+            if binary is None:
+                self.canvas.draw()
+                #self.hexLabel.setText('Hexadecimal Invalido')
+                #self.binLabel.setText('-')
+                return None
+
+        #self.hexLabel.setText('0x' + hex_)
+        #self.binLabel.setText('0b' + binary)
+
+        return binary
 
     def update(self):
 
@@ -93,24 +149,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.figure.clear()
 
-        input = [0,1,1,1,0,1,1,1,1,0,0,0,0,1,1,1]
+        input = self.readInput()
+        if input is None:
+            self.canvas.draw()
+            return
+        print(input)
 
         input_data = MainWindow.DataSets(1)
         clock_data = MainWindow.DataSets(1)
         #
         output_data = MainWindow.DataSets(1)
 
+        input = [int(i) for i in input]
         tmp = y = [input[0]] + input
         x = [i for i in range(len(tmp))]
         input_data.set(x,y)
         y = [i%2 for i in range(2*len(tmp)-1)]
         x = [i/2 for i in range(2*len(tmp)-1)]
         clock_data.set(x,y)
+        output = False
         if self.line_coding is not None:
             y = self.line_coding(input,self.initial_condition)
             y = [y[0]] + y
             x = [i for i in range(len(y))]
             output_data.set(x,y)
+            output = True
 
         n = 1
         n = n + int(self.actionShow_Input.isChecked())
@@ -127,11 +190,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.updateData(self.input_graph, input_data)
             self.input_graph.set_title("input")
 
-        self.output_graph = self.figure.add_subplot(n, 1, n)
-        self.updateData(self.output_graph, output_data)
-        self.output_graph.set_title("output")
+        if output is True:
+            self.output_graph = self.figure.add_subplot(n, 1, n)
+            self.updateData(self.output_graph, output_data)
+            self.output_graph.set_title("output")
+            self.canvas.draw()
 
-        self.canvas.draw()
         self.updated = False
 
     def updateData(self, graph, data):
@@ -161,10 +225,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #graph.yaxis.set_ticks_position('left')
 
         if self.checkBox.isChecked() is True:
-            #value = (x_values[-1] - 19*self.VizualizationSpinBox.value()/20) * \
-            #    self.horizontalSlider.value()/99
-            #start = value - self.VizualizationSpinBox.value()/20
-            #end = start + 21*self.VizualizationSpinBox.value()/20
+            value = (x[-1] - 19*(8)/20) * \
+                self.horizontalScrollBar.value()/99
+            start = value - (8)/20
+            end = start + 21*(8)/20
             self.label_2.show()
             self.horizontalScrollBar.show()
         else:
