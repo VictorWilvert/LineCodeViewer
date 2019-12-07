@@ -30,7 +30,9 @@ def generate_ami(binary_list, init_cond):
 
 def generate_machester_differential(binary_list, init_cond):
 
-    result = [int(init_cond)]
+    result = [1]
+    if init_cond is not None:
+        result = [int(init_cond)]
     for bit in binary_list:
         result.append(result[-1] if bit else (result[-1] + 1) % 2)
         result.append(0 if result[-1] else 1)
@@ -56,7 +58,9 @@ def generate_nrz_unipolar(binary_list, _):
 
 def generate_nrz_polar_i(binary_list, init_cond):
 
-    result = [int(init_cond)]
+    result = [1]
+    if init_cond is not None:
+        result = [int(init_cond)]
     for bit in binary_list:
         result.append(result[-1] if not bit else (result[-1] + 1) % 2)
 
@@ -145,3 +149,24 @@ def generate_mlt3(binary_list, init_cond):
 def generate_pseudoternary(binary_list, init_cond):
 
     return generate_ami_b8zs_base(binary_list, init_cond, False, True)
+
+def function_vector():
+    #
+    ret_val = {"Unipolar NRZ-L" : generate_nrz_unipolar,
+               "Bipolar NRZ-L" : generate_nrz_polar_l,
+               #"Unipolar NRZ-I" : ,
+               "Bipolar NRZ-I" : generate_nrz_polar_i,
+               #"Unipolar NRZ-M" : ,
+               #"Bipolar NRZ-M" : ,
+               #"Unipolar NRZ-S" : ,
+               #"Bipolar NRZ-S" : ,
+               "Bipolar RZ" : generate_rz,
+               "AMI" : generate_ami,
+               "Pseudoternay" : generate_pseudoternary,
+               "Manchester" : generate_manchester,
+               "Differential Manchester" : generate_machester_differential,
+               "MLT-3" : generate_mlt3,
+               "2B1Q" : generate_2b1q,}
+    return ret_val
+
+
