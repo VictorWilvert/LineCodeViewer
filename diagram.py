@@ -24,6 +24,9 @@ class Graph:
     def setYInterval(self, min_, max_):
         self._yinterval = (min_, max_)
 
+    def getYInterval(self):
+        return self._yinterval
+
     def setInitialCondition(self, initial_condition):
         self._initial_codition = initial_condition
 
@@ -125,16 +128,8 @@ class Diagram:
                 start = value - self.VizualizationSpinBox.value()/20
                 end = start + 21*self.VizualizationSpinBox.value()/20
             """
-            first = y[0]
-            for val in y:
-                if val != first:
-                    break
-            else:
-                if first == 0:
-                    graph.axis([start, end, -0.24, 1.24])
-                else:
-                    graph.axis([start, end, min(0, first) - 0.2*abs(first) - 0.04,
-                    max(0, first) + 0.2*abs(first) + 0.04])
-                continue
-            diff = max(y) - min(y)
-            graph.axis([start, end, min(y) - 0.2*diff - 0.04, max(y) + 0.2*diff + 0.04])
+
+            y_interval = self._graph_vector[i].getYInterval()
+            diff = y_interval[1] - y_interval[0]
+            graph.axis([start, end, y_interval[0] - 0.2*diff - 0.04,
+                        y_interval[1] + 0.2*diff + 0.04])
