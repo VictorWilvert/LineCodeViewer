@@ -2,7 +2,7 @@
 
 import sys
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from diagram import Graph, Diagram
@@ -161,6 +161,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.checkBoxInput.stateChanged.connect(self.checkBoxInputSlot)
         self.actionCreateDiagram.triggered.connect(self.actionCreateDiagramSlot)
         self.actionCreateGraph.triggered.connect(self.actionCreateGraphSlot)
+        self.actionSave.triggered.connect(self.actionSaveSlot)
         self.lineEditInput.textChanged.connect(self.requestUpdate)
         self.radioButtonBinary.clicked.connect(self.radioButtonSlot)
         self.radioButtonHexadecimal.clicked.connect(self.radioButtonSlot)
@@ -297,7 +298,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def spinBoxBitSlot(self):
         #
-        self._diagram_vector[self._diagram_index].setXticks(self.spinBoxBit.value())
+        self._diagram_vector[self._diagram_index].setXticks(
+            self.spinBoxBit.value())
         self.requestUpdate()
 
     def comboBoxInitialValueSlot(self):
@@ -308,6 +310,37 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         graph.setInitialCondition(self.comboBox.currentIndex())
 
         self.requestUpdate()
+
+    def saveToCSVFile(self, filename):
+
+        index = self.treeView.currentIndex().row()
+        graph = self._diagram_vector[self._diagram_index].getGraph(index)
+
+        with open(filename, 'w') as file:
+            file.write('x, in_y, out_y\n')
+            for x, in_y, out_y in zip(graph.getData()[0], graph.getInputData(),
+                                      graph.getData()[1]):
+                file.write('{}, {}, {}\n'.format(x, in_y, out_y))
+
+    def saveToPNGFile(self, filename):
+        pass
+
+    def actionSaveSlot(self):
+
+        file_filter = 'CSV files (*.csv);; Image files(*.png *.jpg)'
+        fdialog = QFileDialog(None, 'Open File', '', file_filter)
+
+        if fdialog.exec_():
+            filename = fdialog.selectedFiles()[0]
+        else:
+            return
+
+        if filename.endswith('.csv'):
+            self.saveToCSVFile(filename)
+        else:
+            msg = QMessageBox(QMessageBox.Critical, 'Error',
+                              'The format of this file is not supported')
+            msg.exec_()
 
     @staticmethod
     def hexToBin(data_hex):

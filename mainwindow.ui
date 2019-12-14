@@ -324,8 +324,8 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="action_Open"/>
-    <addaction name="action_Save"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
    </widget>
    <widget class="QMenu" name="menu_Edit">
     <property name="title">
@@ -367,12 +367,12 @@
    <addaction name="actionCreateGraph"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="action_Open">
+  <action name="actionOpen">
    <property name="text">
     <string>&amp;Open</string>
    </property>
   </action>
-  <action name="action_Save">
+  <action name="actionSave">
    <property name="text">
     <string>&amp;Save</string>
    </property>

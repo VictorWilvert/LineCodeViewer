@@ -13,6 +13,7 @@ class Graph:
         self._x_label = ""
         self._y_label = ""
         self._data = ([], [])
+        self._input_data = ()
         self._yinterval = (0, 1)
 
     def setLineCode(self, line_code):
@@ -52,15 +53,19 @@ class Graph:
         return self._y_label
 
     def setData(self, data_input):
-        if len(data_input) is 0:
+        if len(data_input) == 0:
             return
         y = self._line_code(data_input, self._initial_codition)
         y = [y[0]] + y
         x = [i for i in range(len(y))]
         self._data = (x, y)
+        self._input_data = tuple(data_input)
 
     def getData(self):
         return self._data
+
+    def getInputData(self):
+        return self._input_data
 
 class Diagram:
 
