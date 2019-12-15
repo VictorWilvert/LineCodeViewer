@@ -57,7 +57,8 @@ class Graph:
             return
         y = self._line_code(data_input, self._initial_codition)
         y = [y[0]] + y
-        x = [i for i in range(len(y))]
+        size_mul = (len(y) - 1)/len(data_input)
+        x = [i/size_mul for i in range(len(y))]
         self._data = (x, y)
         self._input_data = tuple(data_input)
 
@@ -104,10 +105,10 @@ class Diagram:
         return self._figure
 
     def updateFigure(self):
-        if self.numberOfGraphs() is 0:
+        if self.numberOfGraphs() == 0:
             return
         self._figure.clear()
-        if self._data_input is None or len(self._data_input) is 0:
+        if self._data_input is None or len(self._data_input) == 0:
             return
         # update the figure with new data
         self._figure.subplots_adjust(hspace=0.8, left=0.05, right=0.95)

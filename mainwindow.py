@@ -18,7 +18,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         'Differential Manchester': (('Nivel Baixo', 'Nivel Alto'), (0, 1)),
         'AMI': (('Bit 1 Positivo', 'Bit 1 Negativo'), (-1, 1)),
         'MLT-3': (("Bit 1", "Bit 0 Crescendo", "Bit 0 Decrescendo", "Bit -1"),
-                  (-1, 1))
+                  (-1, 1)),
+        '2B1Q': ((), (-3, 3))
     }
 
     def __init__(self, parent=None):
