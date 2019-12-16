@@ -323,12 +323,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                       graph.getData()[1]):
                 file.write('{}, {}, {}\n'.format(x, in_y, out_y))
 
-    def saveToPNGFile(self, filename):
-        pass
+    def saveFigure(self, filename):
+
+        self._diagram_vector[self._diagram_index].figure().savefig(filename)
 
     def actionSaveSlot(self):
 
-        file_filter = 'CSV files (*.csv);; Image files(*.png *.jpg)'
+        file_filter = ('CSV files (*.csv);; Image files(*.png *.jpg);; '
+                       'PDF files (*.pdf)')
         fdialog = QFileDialog(None, 'Open File', '', file_filter)
 
         if fdialog.exec_():
@@ -338,6 +340,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if filename.endswith('.csv'):
             self.saveToCSVFile(filename)
+        elif filename.endswith('.png') or filename.endswith('.jpg') or \
+            filename.endswith('.pdf'):
+
+            self.saveFigure(filename)
         else:
             msg = QMessageBox(QMessageBox.Critical, 'Error',
                               'The format of this file is not supported')
