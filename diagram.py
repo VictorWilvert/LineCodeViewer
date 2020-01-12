@@ -16,6 +16,18 @@ class Graph:
         self._input_data = ()
         self._yinterval = (0, 1)
 
+    def toDict(self):
+        return {
+            'title': self._title,
+            'x-label': self._x_label,
+            'y-label': self._y_label,
+            'x-data': tuple(self._data[0]),
+            'y-data': tuple(self._data[1]),
+            'input-data': self._input_data,
+            'y-interval': self._yinterval,
+            'linecode-function': self._line_code
+        }
+
     def setLineCode(self, line_code):
         self._line_code = line_code
 
@@ -76,6 +88,14 @@ class Diagram:
         self._graph_vector = []
         self._data_input = None
         self._xticks = 2
+
+    def toDict(self):
+        return {
+            'graphs': tuple(graph.toDict() for graph in self._graph_vector),
+            'x-ticks': self._xticks,
+            'label': self._label,
+            'data_input': self._data_input
+        }
 
     def setLabel(self, label):
         self._label = label

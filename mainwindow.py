@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
 import sys
+import json
 from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from diagram import Graph, Diagram
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from diagram import Graph, Diagram
 import linecode
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
@@ -330,7 +331,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def actionSaveSlot(self):
 
         file_filter = ('CSV files (*.csv);; Image files(*.png *.jpg);; '
-                       'PDF files (*.pdf)')
+                       'PDF files (*.pdf);; JSON files(*.json)')
         fdialog = QFileDialog(None, 'Open File', '', file_filter)
 
         if fdialog.exec_():
@@ -344,6 +345,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             filename.endswith('.pdf'):
 
             self.saveFigure(filename)
+        elif filename.endswith('.json'):
+            linecode_functions = linecode.function_vector()
+            with open(filename, 'w') as file:
+                diagrams = tuple(diagram.toDict() for diagram in
+                                 self._diagram_vector)
+                for diagram in diagrams:
+                    for graph in diagram['graphs']:
+                        graph_linecode_function = graph['linecode-function']
+                        del graph['linecode-function']
+                        for name, function in linecode_functions.items():
+                            if function is graph_linecode_function:
+                                break
+                        else:
+                            name = 'Unipolar NRZ-L'
+                        graph['linecode'] = name
+
+                json.dump({'diagrams': diagrams}, file)
         else:
             msg = QMessageBox(QMessageBox.Critical, 'Error',
                               'The format of this file is not supported')
