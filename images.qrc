@@ -1,5 +1,9 @@
 <RCC>
   <qresource prefix="/img">
-    <file>image.jpg</file>
+    <file>LCVicon.png</file>
+    <file>Dn.png</file>
+    <file>Dc.png</file>
+    <file>Gn.png</file>
+    <file>Gc.png</file>
   </qresource>
 </RCC>
