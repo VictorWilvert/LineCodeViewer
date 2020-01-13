@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="images.qrc">
+    <normaloff>:/img/LCVicon.png</normaloff>:/img/LCVicon.png</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_6" rowstretch="0" columnstretch="1,0">
     <property name="sizeConstraint">
@@ -317,7 +321,7 @@
      <x>0</x>
      <y>0</y>
      <width>602</width>
-     <height>30</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -380,7 +384,7 @@
   <action name="actionCreateDiagram">
    <property name="icon">
     <iconset resource="images.qrc">
-     <normaloff>:/img/image.jpg</normaloff>:/img/image.jpg</iconset>
+     <normaloff>:/img/Dn.png</normaloff>:/img/Dn.png</iconset>
    </property>
    <property name="text">
     <string>CreateDiagram</string>
@@ -390,6 +394,10 @@
    </property>
   </action>
   <action name="actionCreateGraph">
+   <property name="icon">
+    <iconset resource="images.qrc">
+     <normaloff>:/img/Gn.png</normaloff>:/img/Gn.png</iconset>
+   </property>
    <property name="text">
     <string>CreateGraph</string>
    </property>
