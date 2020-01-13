@@ -6,7 +6,7 @@ from matplotlib.ticker import MaxNLocator
 
 class Graph:
 
-    def __init__(self, line_code, initial_condition = 0):
+    def __init__(self, line_code, initial_condition=0):
         self._line_code = line_code
         self._initial_codition = initial_condition
         self._title = ""
@@ -16,9 +16,27 @@ class Graph:
         self._input_data = ()
         self._yinterval = (0, 1)
 
+    @staticmethod
+    def fromDict(graph_dict):
+
+        graph = Graph(None)
+
+        graph._line_code = graph_dict['linecode-function']
+        graph._initial_codition = graph_dict['initial-condition']
+        graph._title = graph_dict['title']
+        graph._x_label = graph_dict['x-label']
+        graph._y_label = graph_dict['y-label']
+        graph._data = (list(graph_dict['x-data']),
+                       list(graph_dict['y-data']))
+        graph._input_data = graph_dict['input-data']
+        graph._yinterval = graph_dict['y-interval']
+
+        return graph
+
     def toDict(self):
         return {
             'title': self._title,
+            'initial-condition': self._initial_codition,
             'x-label': self._x_label,
             'y-label': self._y_label,
             'x-data': tuple(self._data[0]),
@@ -89,12 +107,27 @@ class Diagram:
         self._data_input = None
         self._xticks = 2
 
+    @staticmethod
+    def fromDict(diagram_dict):
+
+        diagram = Diagram('')
+
+        diagram._graph_vector = [
+            Graph.fromDict(graph) for graph in diagram_dict['graphs']]
+        diagram._xticks = diagram_dict['x-ticks']
+        diagram._label = diagram_dict['label']
+        diagram._data_input = diagram_dict['data-input']
+
+        digram.updateFigure()
+
+        return diagram
+
     def toDict(self):
         return {
             'graphs': tuple(graph.toDict() for graph in self._graph_vector),
             'x-ticks': self._xticks,
             'label': self._label,
-            'data_input': self._data_input
+            'data-input': self._data_input
         }
 
     def setLabel(self, label):
