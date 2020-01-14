@@ -22,7 +22,7 @@ class Graph:
         graph = Graph(None)
 
         graph._line_code = graph_dict['linecode-function']
-        graph._initial_codition = graph_dict['initial-condition']
+        graph._initial_codition = graph_dict.get('initial-condition', 0)
         graph._title = graph_dict['title']
         graph._x_label = graph_dict['x-label']
         graph._y_label = graph_dict['y-label']
@@ -118,7 +118,7 @@ class Diagram:
         diagram._label = diagram_dict['label']
         diagram._data_input = diagram_dict['data-input']
 
-        digram.updateFigure()
+        diagram.updateFigure()
 
         return diagram
 
@@ -150,6 +150,9 @@ class Diagram:
 
     def setDataInput(self, data_input):
         self._data_input = data_input
+
+    def getDataInput(self):
+        return self._data_input
 
     def setXticks(self, value):
         self._xticks = value

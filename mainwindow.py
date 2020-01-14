@@ -18,6 +18,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     CODELINE_INFO_DICT = {
         'Differential Manchester': (('Nivel Baixo', 'Nivel Alto'), (0, 1)),
         'AMI': (('Bit 1 Positivo', 'Bit 1 Negativo'), (-1, 1)),
+        'Pseudoternay': (('Bit 1 Positivo', 'Bit 1 Negativo'), (-1, 1)),
         'MLT-3': (("Bit 1", "Bit 0 Crescendo", "Bit 0 Decrescendo", "Bit -1"),
                   (-1, 1)),
         '2B1Q': ((), (-3, 3))
@@ -132,10 +133,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return [int(i) for i in data_bin]
 
     def addGraph(self, line_code):
-        #
-        self._diagram_vector[self._diagram_index].addGraph(Graph(linecode.generate_nrz_unipolar))
-        row = self.treeView.model().itemFromIndex(self.treeView.model().index(self._diagram_index,0))
-        item = QStandardItem(self.comboBoxLineCode.itemText(self.comboBoxLineCode.currentIndex()))
+
+        self.__addGraphObject(Graph(linecode.generate_nrz_unipolar))
+
+    def __addGraphObject(self, graph, linecode_name=None, diagram_index=None):
+
+        if linecode_name is None:
+            linecode_name = self.comboBoxLineCode.itemText(
+                self.comboBoxLineCode.currentIndex())
+
+        self._diagram_vector[self._diagram_index].addGraph(graph)
+
+        if diagram_index is None:
+            diagram_index = self._diagram_index
+        row = self.treeView.model().itemFromIndex(
+            self.treeView.model().index(diagram_index, 0))
+        item = QStandardItem(linecode_name)
         item.setEditable(False)
         row.appendRow(item)
 
@@ -143,15 +156,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         pass
 
     def addDiagram(self, label):
-        #
-        self._diagram_vector.append(Diagram(label))
+
+        self.__addDiagramObject(Diagram(label))
+
+    def __addDiagramObject(self, diagram):
+
+        self._diagram_vector.append(diagram)
         self._diagram_index = len(self._diagram_vector)-1
-        item = QStandardItem(label)
+        item = QStandardItem(diagram.getLabel())
         item.setEditable(True)
         self.treeView.model().appendRow(item)
-        self.canvas.append(FigureCanvas(self._diagram_vector[self._diagram_index].figure()))
-        #
-        self._input_vector.append("")
+        self.canvas.append(FigureCanvas(
+            self._diagram_vector[self._diagram_index].figure()))
+
+        input_ = diagram.getDataInput()
+        if input_ is None:
+            input_ = ''
+        else:
+            input_ = ''.join(str(in_val) for in_val in input_)
+        self._input_vector.append(input_)
         self.lineEditInput.setText(self._input_vector[self._diagram_index])
 
     def removeDiagram(self):
@@ -163,6 +186,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.checkBoxInput.stateChanged.connect(self.checkBoxInputSlot)
         self.actionCreateDiagram.triggered.connect(self.actionCreateDiagramSlot)
         self.actionCreateGraph.triggered.connect(self.actionCreateGraphSlot)
+        self.actionOpen.triggered.connect(self.actionOpenSlot)
         self.actionSave.triggered.connect(self.actionSaveSlot)
         self.lineEditInput.textChanged.connect(self.requestUpdate)
         self.radioButtonBinary.clicked.connect(self.radioButtonSlot)
@@ -192,6 +216,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if self.treeView.model().indexFromItem(item.parent()).row() != self._diagram_index:
                 self._diagram_index = self.treeView.model().indexFromItem(item.parent()).row()
                 self._digrama_update = True
+
             graph = self._diagram_vector[self._diagram_index].getGraph(index.row())
             index = self.comboBoxLineCode.findText(item.text())
             self.comboBoxLineCode.setCurrentIndex(index)
@@ -328,11 +353,53 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self._diagram_vector[self._diagram_index].figure().savefig(filename)
 
+    def actionOpenSlot(self):
+
+        file_filter = ('JSON files (*.json)')
+        fdialog = QFileDialog(None, 'Open File', '', file_filter)
+
+        if fdialog.exec_():
+            filename = fdialog.selectedFiles()[0]
+        else:
+            return
+
+        if filename.endswith('.json'):
+
+            self.treeView.model().clear()
+            self._diagram_vector.clear()
+
+            linecode_functions = linecode.function_vector()
+            with open(filename) as file:
+                diagrams = json.load(file)['diagrams']
+
+            for diagram_index, diagram in enumerate(diagrams):
+                graphs = diagram['graphs']
+                graph_linecode_name_l = [None]*len(graphs)
+                for i, graph in enumerate(graphs):
+                    linecode_name = graph['linecode']
+                    graph['linecode-function'] = \
+                        linecode_functions[linecode_name]
+                    graph_linecode_name_l[i] = linecode_name
+                diagram_obj = Diagram.fromDict(diagram)
+                self.__addDiagramObject(diagram_obj)
+                for i in range(diagram_obj.numberOfGraphs()):
+                    self.__addGraphObject(
+                        diagram_obj.getGraph(i),
+                        linecode_name=graph_linecode_name_l[i],
+                        diagram_index=diagram_index)
+
+            self._digrama_update = True
+            self.requestUpdate()
+        else:
+            msg = QMessageBox(QMessageBox.Critical, 'Error',
+                              'The format of this file is not supported')
+            msg.exec_()
+
     def actionSaveSlot(self):
 
         file_filter = ('CSV files (*.csv);; Image files(*.png *.jpg);; '
                        'PDF files (*.pdf);; JSON files(*.json)')
-        fdialog = QFileDialog(None, 'Open File', '', file_filter)
+        fdialog = QFileDialog(None, 'Save File', '', file_filter)
 
         if fdialog.exec_():
             filename = fdialog.selectedFiles()[0]
