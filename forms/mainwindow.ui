@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="images.qrc">
+   <iconset resource="../imgs/images.qrc">
     <normaloff>:/img/LCVicon.png</normaloff>:/img/LCVicon.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -321,7 +321,7 @@
      <x>0</x>
      <y>0</y>
      <width>602</width>
-     <height>24</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -383,7 +383,7 @@
   </action>
   <action name="actionCreateDiagram">
    <property name="icon">
-    <iconset resource="images.qrc">
+    <iconset resource="../imgs/images.qrc">
      <normaloff>:/img/Dn.png</normaloff>:/img/Dn.png</iconset>
    </property>
    <property name="text">
@@ -395,7 +395,7 @@
   </action>
   <action name="actionCreateGraph">
    <property name="icon">
-    <iconset resource="images.qrc">
+    <iconset resource="../imgs/images.qrc">
      <normaloff>:/img/Gn.png</normaloff>:/img/Gn.png</iconset>
    </property>
    <property name="text">
@@ -407,7 +407,7 @@
   </action>
  </widget>
  <resources>
-  <include location="images.qrc"/>
+  <include location="../imgs/images.qrc"/>
  </resources>
  <connections/>
 </ui>

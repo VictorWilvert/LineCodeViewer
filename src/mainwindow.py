@@ -1,17 +1,26 @@
 #!/usr/bin/env python3
 
 import sys
+import os
 import json
 from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from diagram import Graph, Diagram
-import linecode
+from .diagram import Graph, Diagram
+from . import linecode
+
+BASEPATH = os.path.abspath(os.path.dirname(__file__))
+
+if BASEPATH.endswith('src'):
+    BASEPATH = os.path.dirname(BASEPATH)
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-Ui_MainWindow, _ = uic.loadUiType("mainwindow.ui")
+
+sys.path.insert(0, f'{BASEPATH}/imgs/')
+
+Ui_MainWindow, _ = uic.loadUiType(f'{BASEPATH}/forms/mainwindow.ui')
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
@@ -480,11 +489,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return None
         return data_txt
 
-def __runfile__():
+def main():
     app = QApplication(sys.argv)
     main = MainWindow()
     main.show()
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
-    __runfile__()
+    main()
