@@ -8,6 +8,19 @@ FILE_PATH = os.path.abspath(os.path.dirname(__file__))
 with open(f'{FILE_PATH}/requirements.txt') as file:
     requirements = list(file)
 
+RC_FILENAME = f'{FILE_PATH}/imgs/images_rc.py'
+
+if not os.path.exists(RC_FILENAME):
+
+    try:
+        from PyQt5 import pyrcc_main
+    except ImportError as err:
+        raise Exception('Requires \'PyQt5\' package to run setup') from err
+
+    if not pyrcc_main.processResourceFile([f'{FILE_PATH}/imgs/images.qrc'],
+                                          RC_FILENAME, False):
+        raise Exception('Error occurred creating resource file')
+
 setup(
     name='LineCodeViewer',
     version='0.1',
@@ -34,5 +47,6 @@ setup(
         'gui_scripts': [
             'linecodeviewer = linecodeviewer.mainwindow:main',
         ]
-    }
+    },
+    license='GPL-3.0'
 )
