@@ -145,13 +145,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.__addGraphObject(Graph(linecode.generate_nrz_unipolar))
 
-    def __addGraphObject(self, graph, linecode_name=None, diagram_index=None):
+    def __addGraphObject(self, graph, linecode_name=None, diagram_index=None,
+                         add_to_diagram=True):
 
         if linecode_name is None:
             linecode_name = self.comboBoxLineCode.itemText(
                 self.comboBoxLineCode.currentIndex())
 
-        self._diagram_vector[self._diagram_index].addGraph(graph)
+        if add_to_diagram:
+            self._diagram_vector[self._diagram_index].addGraph(graph)
 
         if diagram_index is None:
             diagram_index = self._diagram_index
@@ -395,7 +397,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.__addGraphObject(
                         diagram_obj.getGraph(i),
                         linecode_name=graph_linecode_name_l[i],
-                        diagram_index=diagram_index)
+                        diagram_index=diagram_index,
+                        add_to_diagram=False)
 
             self._digrama_update = True
             self.requestUpdate()
